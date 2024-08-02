@@ -1,16 +1,4 @@
-const { readFile, access, constants } = require('node:fs');
-
-const readFilePromise = (path, encoding) => {
-  return new Promise((resolve, reject) => {
-    readFile(path, encoding, (err, data) => {
-      if (!!err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
-};
+const { readFile, writeFile, access, constants } = require('node:fs');
 
 const accessPromise = (path) => {
   return new Promise((resolve, reject) => {
@@ -24,4 +12,28 @@ const accessPromise = (path) => {
   });
 };
 
-module.exports = { readFilePromise, accessPromise };
+const readFilePromise = (path, encoding) => {
+  return new Promise((resolve, reject) => {
+    readFile(path, encoding, (err, data) => {
+      if (!!err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+
+const writeFilePromise = (path, data) => {
+  return new Promise((resolve, reject) => {
+    writeFile(path, data, (err) => {
+      if (!!err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+module.exports = { readFilePromise, writeFilePromise, accessPromise };
