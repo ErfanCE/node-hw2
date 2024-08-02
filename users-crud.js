@@ -162,13 +162,61 @@ const editUserDataByUid = async (usersFilePath, uid, modifiedUser) => {
 
     return console.info(`user (uid: ${uid}) edited successfully`);
   } catch (err) {
-    console.error(`[-] users-crud > addUser ${err.message}`);
+    console.error(`[-] users-crud > editUsersDataByUid ${err.message}`);
+  }
+};
+
+const deleteUserDataByUid = async (usersFilePath, uid) => {
+  try {
+    // validation
+    if (typeof usersFilePath !== 'string') {
+      return console.info('[i] invalid input type(usersFilePath)');
+    }
+    if (typeof uid !== 'number') {
+      return console.info('[i] invalid input type(uid)');
+    }
+
+    let users = await getUsers(usersFilePath);
+
+    const targetUserIndex = users.findIndex((user) => user.uid === uid);
+    if (targetUserIndex === -1) {
+      return console.info(`[i] user (uid: ${uid}) not found!`);
+    }
+
+    // delete user data
+    users = users.toSpliced(targetUserIndex, 1);
+    const usersAsJson = JSON.stringify(users);
+
+    await access(usersFilePath);
+    await writeFile(usersFilePath, usersAsJson);
+
+    return console.info(`user (uid: ${uid}) deleted successfully`);
+  } catch (err) {
+    console.error(`[-] users-crud > deleteUserDataByUid ${err.message}`);
+  }
+};
+
+const deleteAllUsersData = async (usersFilePath) => {
+  try {
+    // validation
+    if (typeof usersFilePath !== 'string') {
+      return console.info('[i] invalid input type(usersFilePath)');
+    }
+
+    await access(usersFilePath);
+    await writeFile(usersFilePath, '[]');
+
+    return console.info(`all users data deleted successfully`);
+  } catch (error) {
+    console.error(`[-] users-crud > deleteAllUsersData ${err.message}`);
   }
 };
 
 module.exports = {
   addUser,
   readAllUsersData,
+  deleteAllUsersData,
   readUserDataByUid,
-  editUserDataByUid
+  editUserDataByUid,
+  deleteUserDataByUid
 };

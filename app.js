@@ -1,7 +1,9 @@
 const {
   addUser,
   readAllUsersData,
-  editUserDataByUid
+  editUserDataByUid,
+  deleteUserDataByUid,
+  deleteAllUsersData
 } = require('./users-crud');
 
 // IIFE - main
@@ -22,6 +24,10 @@ const {
   //   uid: 3,
   //   firstname: 'behnam'
   // });
+
+  // await deleteUserDataByUid(usersPath, 3);
+
+  await deleteAllUsersData(usersPath);
 
   await readAllUsersData(usersPath);
 })().catch(console.error);
