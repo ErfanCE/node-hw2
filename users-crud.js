@@ -112,8 +112,63 @@ const addUser = async (usersFilePath, newUserData) => {
   }
 };
 
+const editUserDataByUid = async (usersFilePath, uid, modifiedUser) => {
+  try {
+    // validation
+    if (typeof usersFilePath !== 'string') {
+      return console.info('[i] invalid input type(usersFilePath)');
+    }
+    if (typeof uid !== 'number') {
+      return console.info('[i] invalid input type(uid)');
+    }
+    if (
+      typeof modifiedUser !== 'object' ||
+      Array.isArray(modifiedUser) ||
+      modifiedUser === null
+    ) {
+      return console.info('[i] invalid input type(modifiedUser)');
+    }
+
+    // sanitization
+    for (const key in modifiedUser) {
+      if (!modifiedUser[key] || !userProperties.includes(key)) {
+        return console.info(`inalid input (${key})`);
+      }
+    }
+
+    let users = await getUsers(usersFilePath);
+
+    const targetUser = users.find((user) => user.uid === uid);
+    if (!targetUser) return console.info(`user (uid: ${uid}) not found!`);
+
+    if (!!modifiedUser.uid && uid !== modifiedUser.uid) {
+      const duplicatedUser = users.find(
+        (user) => user.uid === modifiedUser.uid
+      );
+      if (!!duplicatedUser) return console.info('[i] duplicated user! :)');
+    }
+
+    // edit(patch) user data
+    users = users.map((user) => {
+      if (user.uid === uid) {
+        return { ...user, ...modifiedUser };
+      }
+      return user;
+    });
+    const usersAsJson = JSON.stringify(users);
+
+    await access(usersFilePath);
+    await writeFile(usersFilePath, usersAsJson);
+
+    return console.info(`user (uid: ${uid}) edited successfully`);
+  } catch (err) {
+    console.error(`[-] users-crud > addUser ${err.message}`);
+  }
+};
+
 module.exports = {
   addUser,
   readAllUsersData,
-  readUserDataByUid
+  readUserDataByUid,
+  editUserDataByUid
 };
